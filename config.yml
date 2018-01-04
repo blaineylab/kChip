@@ -18,12 +18,12 @@ image:
   bugs: 0       # index of bugs (start at 0) in image for dye channels
 
 well_mask:
-  filename: kchip_v0/well_mask.tif
+  filename: kchip/well_mask.tif
   pixel_size: 8.33625 # um/px
   well_start_xy: [850,  522] # currently this is post scaling
 
 barcodes:
-  path: Notes.xlsx
+  path: kchip/Notes.xlsx
   cluster:
       offset: [1200,600,600]
       points_to_cluster: 2000
