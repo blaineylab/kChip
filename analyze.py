@@ -46,7 +46,13 @@ def initialize_droplets(config):
 
         # Compute local average
         dyes = drop.local_average(img[:,:,config['image']['dyes']])
-        droplets_[['R','G','B']]= pd.DataFrame(dyes[droplets_['ImageY'],droplets_['ImageX']])
+        to_add = pd.DataFrame(dyes[droplets_['ImageY'],droplets_['ImageX']])
+
+        # Fix a bug where if there is only 1 droplet detected it is wrong orientaiton
+        if to_add.shape[1] != 3:
+            to_add = to_add.T
+            
+        droplets_[['R','G','B']]= to_add
 
         # append dataframe
         droplets.append(droplets_)
