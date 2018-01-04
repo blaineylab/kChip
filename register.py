@@ -38,8 +38,8 @@ def register(config,img_tuple,t='premerge',t2='t0'):
     '''
 
     # Read images
-    pre_img = kchip_io.read(x=img_tuple[0],y=img_tuple[1],t=t)
-    post_img = kchip_io.read(x=img_tuple[0],y=img_tuple[1],t=t2)
+    pre_img = kchip_io.read(config, x=img_tuple[0],y=img_tuple[1],t=t)
+    post_img = kchip_io.read(config, x=img_tuple[0],y=img_tuple[1],t=t2)
 
     slices = np.delete(np.arange(pre_img.shape[2]),config['image']['bugs'])
 

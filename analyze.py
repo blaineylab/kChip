@@ -35,7 +35,7 @@ def initialize_droplets(config):
         print 'Creating droplets from: '+str(xy[0])+','+str(xy[1])
 
         # Read in image
-        img = kchip_io.read(x=xy[0],y=xy[1],t='premerge')
+        img = kchip_io.read(config, x=xy[0],y=xy[1],t='premerge')
 
         # Locate droplets and store in temporary dataframe, then append to list of dataframes
         droplets_ = drop.find_droplets(img.sum(axis=2))
@@ -292,7 +292,7 @@ def initialize_post_wells(config,timepoint):
         print 'Now analyzing: '+str(xy[0])+','+str(xy[1])
 
         # Read in image
-        post_img = kchip_io.read(x=xy[0],y=xy[1],t=timepoint)
+        post_img = kchip_io.read(config, x=xy[0],y=xy[1],t=timepoint)
 
         post_wells_ = drop.post_img_to_wells(config,post_img)
         post_wells_.insert(0,'IndexY',xy[1])

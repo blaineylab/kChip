@@ -47,11 +47,19 @@ def list_index(image_list,exp):
 
     return idx
 
-def read(x,y,t,cfg='kchip_config.yml',number=4, ret=(0,1,2,3)):
-    ''' Read in image corresponding to position (x,y) and t (string) '''
-    with open(cfg) as ymlfile:
-        config = yaml.load(ymlfile)
+def read(config,x,y,t, number=4, ret=(0,1,2,3)):
+    ''' Read in image corresponding to position (x,y) and t (string).
 
+    Inputs:
+        - config, the config dictionary
+        - x (int), the x index
+        - y (int), the y index
+        - t (str), timepoint corresponding to config name, e.g. 'premerge', 't0', 't1'
+        - (optional) number (int), the number of channels in the image (default 4), to detect issues
+        - (optional) ret (tuple of int), the slices to return, default (0,1,2,3)
+    Outputs:
+        - a stack of images as 3 dimensional numpy array (slices are axis=2)
+    '''
     fname = path.join(config['image']['base_path'],config['image']['names'][t]+'_'+str(x)+'_'+str(y)+'.tif')
     img = io.imread(fname)
 
