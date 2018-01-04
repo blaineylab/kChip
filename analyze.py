@@ -51,7 +51,7 @@ def initialize_droplets(config):
         # Fix a bug where if there is only 1 droplet detected it is wrong orientaiton
         if to_add.shape[1] != 3:
             to_add = to_add.T
-            
+
         droplets_[['R','G','B']]= to_add
 
         # append dataframe
@@ -152,6 +152,9 @@ def fit_droplets_to_mask(config,droplets,rotation_theta):
     droplets['Edge'] = False
     removed = []
 
+    # Compute the mask margin
+    mask_margin = int(np.floor(0.01*config['image']['size'])*5)
+
     for xy in image_idx:
         x = xy[0]
         y = xy[1]
@@ -159,7 +162,7 @@ def fit_droplets_to_mask(config,droplets,rotation_theta):
         print 'Fitting droplets to well mask in:',x,y
 
         # Try to load mask; continue otherwise
-        mask = well_mask[mask_xy(x,y,50)]
+        mask = well_mask[mask_xy(x,y,mask_margin)]
 
         if 0 in mask.shape:
             continue
@@ -180,6 +183,7 @@ def fit_droplets_to_mask(config,droplets,rotation_theta):
 
         # Translate
         t_shift, t_error, t_phasediff = matchmask.register_translation(syn_img,mask)
+        print 'Shift: ',t_shift
 
         # Updated shifted positions
         shifted_pos[:,1] = shifted_pos[:,1]-t_shift[0]
