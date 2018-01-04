@@ -152,9 +152,6 @@ def fit_droplets_to_mask(config,droplets,rotation_theta):
     droplets['Edge'] = False
     removed = []
 
-    # Compute the mask margin
-    mask_margin = int(np.floor(0.01*config['image']['size'])*5)
-
     for xy in image_idx:
         x = xy[0]
         y = xy[1]
@@ -162,7 +159,7 @@ def fit_droplets_to_mask(config,droplets,rotation_theta):
         print 'Fitting droplets to well mask in:',x,y
 
         # Try to load mask; continue otherwise
-        mask = well_mask[mask_xy(x,y,mask_margin)]
+        mask = well_mask[mask_xy(x,y,100)]
 
         if 0 in mask.shape:
             continue
