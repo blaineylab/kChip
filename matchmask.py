@@ -76,7 +76,7 @@ def slice_mask(config,rotation):
 
     shiftx = lambda x,y: (x-start_image[0])*(FOV_size)*(1-overlap)
     shifty = lambda x,y: (y-start_image[1])*FOV_size*(1-overlap)+np.round(np.tan(rotation)*shiftx(x,y))
-    slicer = lambda x,y,error: [slice(shifty(x,y)+topleft[1]-error, shifty(x,y)+FOV_size+topleft[1]+error),slice(shiftx(x,y)+topleft[0]-error, shiftx(x,y)+FOV_size+topleft[0]+error)]
+    slicer = lambda x,y,error: [slice(max(shifty(x,y)+topleft[1]-error,0), max(shifty(x,y)+FOV_size+topleft[1]+error,0)),slice(max(shiftx(x,y)+topleft[0]-error,0), max(0,shiftx(x,y)+FOV_size+topleft[0]+error))]
     return slicer
 
 #############################################
