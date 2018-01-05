@@ -46,7 +46,13 @@ def initialize_droplets(config):
 
         # Compute local average
         dyes = drop.local_average(img[:,:,config['image']['dyes']])
-        droplets_[['R','G','B']]= pd.DataFrame(dyes[droplets_['ImageY'],droplets_['ImageX']])
+        to_add = pd.DataFrame(dyes[droplets_['ImageY'],droplets_['ImageX']])
+
+        # Fix a bug where if there is only 1 droplet detected it is wrong orientaiton
+        if to_add.shape[1] != 3:
+            to_add = to_add.T
+
+        droplets_[['R','G','B']]= to_add
 
         # append dataframe
         droplets.append(droplets_)
@@ -153,7 +159,7 @@ def fit_droplets_to_mask(config,droplets,rotation_theta):
         print 'Fitting droplets to well mask in:',x,y
 
         # Try to load mask; continue otherwise
-        mask = well_mask[mask_xy(x,y,50)]
+        mask = well_mask[mask_xy(x,y,100)]
 
         if 0 in mask.shape:
             continue
@@ -174,6 +180,7 @@ def fit_droplets_to_mask(config,droplets,rotation_theta):
 
         # Translate
         t_shift, t_error, t_phasediff = matchmask.register_translation(syn_img,mask)
+        print 'Shift: ',t_shift
 
         # Updated shifted positions
         shifted_pos[:,1] = shifted_pos[:,1]-t_shift[0]

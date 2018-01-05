@@ -166,5 +166,5 @@ def edge_mask(xy,mask):
     emask[:np.percentile(xy[:,1],1),:]=1
     emask[np.percentile(xy[:,1],99):,:]=1
     emask[:,:np.percentile(xy[:,0],1)]=1
-    emask[:,np.percentile(xy[:,1],99):]=1
+    emask[:,np.percentile(xy[:,0],99):]=1
     return emask
