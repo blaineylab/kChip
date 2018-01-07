@@ -168,6 +168,9 @@ def fit_droplets_to_mask(config,droplets,rotation_theta):
         d_idx = (droplets['IndexX']==x) & (droplets['IndexY']==y)
         pos = droplets[d_idx][['RX','RY']].values
 
+        if 0 in pos.shape:
+            continue
+
         # Synthesize image for each set of droplet positions
         syn_img, shifted_pos = matchmask.synthesize_image(pos)
 
