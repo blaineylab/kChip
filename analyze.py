@@ -283,7 +283,7 @@ def identify_clusters(config, droplets,show=0,ax=None):
             ax.plot(on_plane[idx,0],on_plane[idx,1],'.',alpha=0.01)
             ax.text(on_plane[idx,0].mean(),on_plane[idx,1].mean(),a)
 
-    return droplets
+    return droplets, on_plane
 
 ######################################## REGISTRATION  #########################
 
@@ -390,3 +390,30 @@ def condense_output(droplets,wells):
     labels = droplets['Label'].unique()
     condensed['Total']=condensed[labels].values.sum(axis=1)
     return condensed
+
+def stack_timepoints(droplets,pre_post_list,timepoint_labels):
+    ''' Create a condensed output with stacked timepoints.
+    Inputs:
+        - droplets, the droplets DataFrame
+        - pre_post_list, a list of the wells dataFrames from each timepoints
+        - timepoint_labels, a list of labels for each timepoint, e.g. [t0, t1, t2, ...]
+    Outputs:
+        - condensed, the condensed output DataFrame
+    '''
+
+    pruned_list = []
+    for df in pre_post_list:
+        pruned_list.append(df[['Hash','Post_Area','Post_Intensity',]].set_index('Hash'))
+
+    stacked = pd.concat(pruned_list,axis=1)
+
+    column_labels = reduce(lambda x,y: x+y, [[t + '_Area',t] for t in timepoint_labels])
+    stacked.columns = column_labels
+
+    condensed = condense_output(droplets,pre_post_list[0])
+    condensed_columns = [c for c in condensed.columns if c not in ['Area','Intensity']]
+    condensed = condensed[condensed_columns]
+
+    out = condensed.set_index('Hash').merge(stacked,left_index=True,right_index=True).reset_index()
+
+    return out
