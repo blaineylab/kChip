@@ -190,12 +190,13 @@ class ReactiveCluster(object):
             - points, (m x 2) array of points
     '''
 
-    def __init__(self, wells):
+    def __init__(self, config, wells):
 
-        offset=[1200,600,600]
-        points_to_cluster=2000
-        eps=0.025
-        min_samples=6
+        # Import parameters from config
+        offset=config['barcodes']['cluster']['offset']
+        points_to_cluster=config['barcodes']['cluster']['points_to_cluster']
+        eps=config['barcodes']['cluster']['eps']
+        min_samples=config['barcodes']['cluster']['min_samples']
 
         # Initialize clustering
         self.droplets = wells.copy(deep=True)
@@ -204,38 +205,45 @@ class ReactiveCluster(object):
         barcodes = dict()
 
         # Compile droplets colors into np array
-        droplets_colors = np.vstack((np.asarray([self.droplets.R1,self.droplets.G1,self.droplets.B1]).T,np.asarray([self.droplets.R2,self.droplets.G2,self.droplets.B2]).T))
-
-        ## TODO --- remove points that are below some intensity threshold?
-
+        droplets_colors = self.droplets[['R','G','B']].values
         # Subtract offsets and project onto plane
-        on_plane = to_2d(to_simplex(normalize_vector(droplets_colors,offset=offset)))
+        self.points = to_2d(to_simplex(normalize_vector(droplets_colors,offset=offset)))
 
         # Use DBSCAN algorithm to estimate cluster centroids
-        self.fig, self.ax = plt.subplots(1, 1)
-        centroids, labels = identify_clusters(on_plane, points_to_cluster=points_to_cluster, eps=eps,min_samples=min_samples,show=1)
-
-        self.points = on_plane
+        centroids, labels = identify_clusters(self.points, points_to_cluster=points_to_cluster, eps=eps,min_samples=min_samples,show=0)
+        self.droplets['Cluster']=labels
         self.centroids = centroids
-        self.labels = labels
+
+        #Initialize plot
+        self.fig, self.ax = plt.subplots(1, 1)
         self.cid = self.fig.canvas.mpl_connect('pick_event', self.on_pick)
+        self.draw()
+
+    def draw(self):
+        for cluster_id in self.droplets['Cluster'].unique():
+            idx = self.droplets['Cluster'].values==cluster_id
+            self.ax.plot(self.points[idx,0],self.points[idx,1],'.',alpha=0.01,picker=5)
+            self.ax.text(self.points[idx,0].mean(),self.points[idx,1].mean(),cluster_id)
+
+        self.ax.plot(self.centroids[:,0],self.centroids[:,1],'rx')
+        self.ax.set_title('Number of centroids:' + str(self.centroids.shape[0]))
+        plt.draw()
 
     def update(self):
         self.ax.clear()
-        self.labels = assign_cluster(self.points, self.centroids,show=1)
-        plt.title('Number of centroids:' + str(self.centroids.shape[0]))
-        plt.draw()
-
-    def draw(self):
-        assign_cluster(self.points, self.centroids,show=1);
+        self.droplets['Cluster'] = assign_cluster(self.points, self.centroids)
+        self.draw()
 
     def on_pick(self, event):
+        print 'detected pick'
         try:
             pos = np.asarray([(event.mouseevent.xdata,event.mouseevent.ydata)])
 
             if event.mouseevent.button == 1:
+                # add centroid
                 self.centroids = np.vstack([self.centroids,pos])
             else:
+                # remove centroid
                 distances = cdist(self.centroids, pos)
                 select = np.argmin(distances)
                 self.centroids = np.delete(self.centroids,select,axis=0)
@@ -245,10 +253,5 @@ class ReactiveCluster(object):
             print e.message
 
     def output(self):
-        barcodes = dict()
-
-        barcodes['Centroids']=self.centroids
-        self.droplets['Cluster1'] = self.labels[self.droplets.shape[0]:]
-        self.droplets['Cluster2'] = self.labels[:self.droplets.shape[0]]
-
-        return self.droplets, barcodes
+        self.droplets['Cluster'] = assign_cluster(self.points, self.centroids)
+        return self.droplets, self.centroids
