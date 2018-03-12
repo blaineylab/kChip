@@ -118,7 +118,12 @@ def initialize_well_mask(config, rotation_theta):
 
     # 1) Read in mask image (created elsewhere from Fineline) - this was done in Well Assignment subdirectory.
 
-    well_mask = ~io.imread(config['well_mask']['filename'])
+    well_mask = io.imread(config['well_mask']['filename'])
+    
+    # invert if necessary, by looking at the corner
+    if (well_mask[:10,:10]==0).sum() < 0.5:
+        well_mask = ~well_mask
+
     rescale_factor = config['well_mask']['pixel_size']/config['image']['pixel_size']
 
     # 2) Resize: The scaling for this image is config['well_mask']['pixel_size']
