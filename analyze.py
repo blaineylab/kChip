@@ -97,6 +97,10 @@ def apply_rotation(droplets,f_img):
     # Find the theta that yields the maximum value
     rotation = -theta_[score_==score_.max()][0]+np.pi/2
 
+    # Since some well arrays are symmetric over a 90-degree rotation, sometimes this is wrong and we have to correct it
+    if rotation >= np.pi/2:
+        rotation = rotation-np.pi/2
+
     rotated_coordinates =matchmask.rotate(droplets[['ImageX','ImageY']].values,rotation)
 
     droplets_['RX']=rotated_coordinates[:,0]
@@ -119,7 +123,7 @@ def initialize_well_mask(config, rotation_theta):
     # 1) Read in mask image (created elsewhere from Fineline) - this was done in Well Assignment subdirectory.
 
     well_mask = io.imread(config['well_mask']['filename'])
-    
+
     # invert if necessary, by looking at the corner
     if (well_mask[:10,:10]==0).sum() < 0.5:
         well_mask = ~well_mask
