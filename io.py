@@ -63,6 +63,11 @@ def read(config,x,y,t, number=4, ret=(0,1,2,3)):
     fname = path.join(config['image']['base_path'],config['image']['names'][t]+'_'+str(x)+'_'+str(y)+'.tif')
     img = io.imread(fname)
 
+    if 'rescale' in config['image'].keys():
+        rescale = config['image']['rescale']
+    else:
+        rescale = np.ones(number)
+
     # a) Transpose if necessary to (x,y,z)
     if img.shape[2] > img.shape[0]:
         img_ = img.transpose((1,2,0))
@@ -71,9 +76,9 @@ def read(config,x,y,t, number=4, ret=(0,1,2,3)):
 
     # b) return slices if necessary
     if img_.shape[2] > number:
-        return img_[:,:,ret]
+        return img_[:,:,ret]*rescale
     else:
-        return img_
+        return img_*rescale
 
 
 def read_excel_barcodes(config):
