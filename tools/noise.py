@@ -8,12 +8,12 @@ from skimage.transform import resize
 #### FLATFIELD CORRECTION ########
 
 def normby(df, groupby, background):
-    df = df
-    df['Norm']=(df['Value']-background)/(df.groupby(groupby).transform('median')['Value']-background)
+    df = df.copy()
+    df['Norm']=(df['Value']-background)/(df.groupby(groupby).transform('mean')['Value']-background)
     return df
 
 def average_over_bin(df,bins):
-    df = df
+    df = df.copy()
 
     df['xbin'] = pd.cut(df['ImageX'],bins=bins,labels=False)
     df['ybin'] = pd.cut(df['ImageY'],bins=bins,labels=False)
@@ -38,5 +38,5 @@ def construct_flatfield(df,bins):
     flatfield = resize(grid,(1024,1024),mode='symmetric')
     return flatfield
 
-def flatfield_correct(row,flatfield_img):
-    return row['Value']/flatfield_img[int(row['ImageY']),int(row['ImageX'])]
+def flatfield_correct(row,flatfield_img,background):
+    return (row['Value']-background)/flatfield_img[int(row['ImageY']),int(row['ImageX'])]+background
