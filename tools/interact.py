@@ -20,8 +20,8 @@ def select_range(df,**kwargs):
     return df.loc[intersect]
 
 ###### INTERACTING WITH IMAGES ########
-def get_image(config,row):
-    return read(config,int(row['IndexX']),int(row['IndexY']),'t2')[:,:,config['image']['bugs']]
+def get_image(config,row,timepoint='t2'):
+    return read(config,int(row['IndexX']),int(row['IndexY']),timepoint)[:,:,config['image']['bugs']]
 
 def show_image(config,row,ax=None,**kwargs):
     if ax is None:
@@ -50,14 +50,14 @@ def bound(arr,b,less=True):
         arr[arr>=b] = b
     return arr
 
-def slice_well(config,row,size=25):
-    return get_image(config,row)[bbox(config,row['ImageX'],row['ImageY'],size=25)]
+def slice_well(config,row,timepoint='t2',size=25):
+    return get_image(config,row,timepoint=timepoint)[bbox(config,row['ImageX'],row['ImageY'],size=25)]
 
-def montage_by(config,df,n=10,size=25,return_index=False,**kwargs):
+def montage_by(config,df,timepoint='t2',n=10,size=25,return_index=False,**kwargs):
     clip_edge = int((float(size)/2))+1
     b = config['image']['size']-1
     s = select(select_range(df,ImageX=[clip_edge,b-clip_edge],ImageY=[clip_edge,b-clip_edge]),**kwargs).sample(n)
-    arr = np.dstack([slice_well(config,r,size=size) for i,r in s.iterrows()]).transpose([2,0,1])
+    arr = np.dstack([slice_well(config,r,timepoint=timepoint,size=size) for i,r in s.iterrows()]).transpose([2,0,1])
 
     if not return_index:
         return montage.montage2d(arr)
