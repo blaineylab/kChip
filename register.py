@@ -125,10 +125,9 @@ def assign_wells(wells,post_wells,shift=0,threshold=150):
             postmerge = np.vstack(tuple(item[0] for item in postmerge_list))+shift
             postidx = np.hstack(tuple(item[1] for item in postmerge_list))
 
-            # match the wells from pre, and post merge
-            match_pre, match_post, match_dist = match_wells(premerge,postmerge)
-
-            well_assignments_list.append(np.asarray([preidx[match_pre], postidx[match_post], match_dist]))
+            if len(postmerge):
+                match_pre, match_post, match_dist = match_wells(premerge,postmerge)
+                well_assignments_list.append(np.asarray([preidx[match_pre], postidx[match_post], match_dist]))
 
     # collapse well assignments list into single ndarray
     well_assignments = np.hstack(well_assignments_list).T
