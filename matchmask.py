@@ -76,7 +76,13 @@ def slice_mask(config,rotation):
 
     shiftx = lambda x,y: (x-start_image[0])*(FOV_size)*(1-overlap)
     shifty = lambda x,y: (y-start_image[1])*FOV_size*(1-overlap)+np.round(np.tan(rotation)*shiftx(x,y))
-    slicer = lambda x,y,error: [slice(max(shifty(x,y)+topleft[1]-error,0), max(shifty(x,y)+FOV_size+topleft[1]+error,0)),slice(max(shiftx(x,y)+topleft[0]-error,0), max(0,shiftx(x,y)+FOV_size+topleft[0]+error))]
+
+    a = int(max(shifty(x,y)+topleft[1]-error,0))
+    b = int(max(shifty(x,y)+FOV_size+topleft[1]+error,0))
+    c = int(max(shiftx(x,y)+topleft[0]-error,0))
+    d = int(max(0,shiftx(x,y)+FOV_size+topleft[0]+error))
+
+    slicer = lambda x,y,error: [slice(a, b),slice(c, d)]
     return slicer
 
 #############################################
@@ -163,8 +169,8 @@ def pad_axis(img,axis,pad_width):
 
 def edge_mask(xy,mask):
     emask = np.zeros(mask.shape)
-    emask[:np.percentile(xy[:,1],1),:]=1
-    emask[np.percentile(xy[:,1],99):,:]=1
-    emask[:,:np.percentile(xy[:,0],1)]=1
-    emask[:,np.percentile(xy[:,0],99):]=1
+    emask[:int(np.percentile(xy[:,1]),1),:]=1
+    emask[int(np.percentile(xy[:,1],99)):,:]=1
+    emask[:,:int(np.percentile(xy[:,0],1))]=1
+    emask[:,int(np.percentile(xy[:,0],99)):]=1
     return emask
