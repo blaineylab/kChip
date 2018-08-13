@@ -164,7 +164,7 @@ def pad_axis(img,axis,pad_width):
 
 def edge_mask(xy,mask):
     emask = np.zeros(mask.shape)
-    emask[:int(np.percentile(xy[:,1]),1),:]=1
+    emask[:int(np.percentile(xy[:,1],1)),:]=1
     emask[int(np.percentile(xy[:,1],99)):,:]=1
     emask[:,:int(np.percentile(xy[:,0],1))]=1
     emask[:,int(np.percentile(xy[:,0],99)):]=1
