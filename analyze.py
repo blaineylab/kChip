@@ -98,7 +98,7 @@ def apply_rotation(droplets,f_img):
     rotation = -theta_[score_==score_.max()][0]+np.pi/2
 
     # Since some well arrays are symmetric over a 90-degree rotation, sometimes this is wrong and we have to correct it
-    if rotation >= np.pi/2:
+    if rotation >= np.pi/4:
         rotation = rotation-np.pi/2
 
     rotated_coordinates =matchmask.rotate(droplets[['ImageX','ImageY']].values,rotation)
