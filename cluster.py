@@ -174,7 +174,7 @@ def plot_shift(b1,b2,ax=None):
     '''
     if ax is None:
         fig, ax = plt.subplots()
-    ax.plot(np.vstack((b1[:,0],b2[:,0])),np.vstack((b1[:,1],b2[:,1])))
+    ax.plot(np.vstack((b1[:,0],b2[:,0])),np.vstack((b1[:,1],b2[:,1])),ls='--')
 
 class ReactiveCluster(object):
     ''' Interactive clustering for manual correction of initial assingments by identify_clusters.

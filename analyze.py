@@ -240,28 +240,41 @@ def identify_clusters(config, droplets,show=0,ax=None):
         - (optional), show (1 to show output, 0 default)
         - (optional), ax (axes handle to plot to, default to None)
     Outputs:
-        - droplets, the droplets DataFrame with Cluster and Label columns added
+        - droplets, the droplets DataFrame with Cluster column added
+        - centroids, n x 2 array of the centroids of clusters found
 
     '''
     droplets = droplets.copy()
 
-    if show:
-        if ax is None:
-            fig, ax = plt.subplots()
+    # project into 2d
+    offset=config['barcodes']['cluster']['offset']
+    on_plane = cluster.to_2d(cluster.to_simplex(cluster.normalize_vector(droplets[['R','G','B']].values,offset=offset)))
 
-    # Add column to droplets
-    droplets['Label'] = ''
+    droplets['PlaneX'] = on_plane[:,0]
+    droplets['PlaneY'] = on_plane[:,1]
 
     # Import parameters from config
-    offset=config['barcodes']['cluster']['offset']
     points_to_cluster=config['barcodes']['cluster']['points_to_cluster']
     eps=config['barcodes']['cluster']['eps']
     min_samples=config['barcodes']['cluster']['min_samples']
 
     # Find cluster centroids and assign all droplets to clusters.
-    on_plane = cluster.to_2d(cluster.to_simplex(cluster.normalize_vector(droplets[['R','G','B']].values,offset=offset)))
     centroids, labels = cluster.identify_clusters(on_plane, points_to_cluster=points_to_cluster, eps=eps,min_samples=min_samples,show=0)
     droplets['Cluster']=labels
+
+    if show:
+        if ax is None:
+            fig, ax = plt.subplots()
+
+        for a in droplets['Cluster'].unique():
+            idx = droplets['Cluster'].values==a
+            ax.plot(on_plane[idx,0],on_plane[idx,1],'.',alpha=0.01)
+
+    return droplets
+
+def map_labels_to_clusters(config, droplets, show=0, ax=None):
+
+    droplets = droplets.copy()
 
     # Map labels to clusters
 
@@ -277,6 +290,7 @@ def identify_clusters(config, droplets,show=0,ax=None):
     apriori['barcodes_2d']  = cluster.to_2d(cluster.to_simplex(cluster.normalize_vector(apriori['barcodes'])))
 
     # Map apriori barcodes to clusters
+    centroids = droplets.groupby('Cluster')[['PlaneX','PlaneY']].median().values
     assignments, map_, unassigned  = cluster.map_barcodes_to_clusters(apriori['barcodes_2d'],centroids,show=show,ax=ax)
 
     # Add labels to droplets dataframe
@@ -287,12 +301,11 @@ def identify_clusters(config, droplets,show=0,ax=None):
     droplets['Label']=[cluster_id_to_label[i] for i in droplets['Cluster']]
 
     if show:
-        for a in droplets['Label'].unique():
-            idx = droplets['Label'].values==a
-            ax.plot(on_plane[idx,0],on_plane[idx,1],'.',alpha=0.01)
-            ax.text(on_plane[idx,0].mean(),on_plane[idx,1].mean(),a)
+        d = droplets.groupby('Label').median()[['PlaneX','PlaneY']]
+        for label in d.index.values:
+            ax.text(d.loc[label,'PlaneX'],d.loc[label,'PlaneY'],label)
 
-    return droplets, on_plane
+    return droplets
 
 ######################################## REGISTRATION  #########################
 
