@@ -14,6 +14,8 @@ from scipy.spatial.distance import cdist
 import matplotlib.pyplot as plt
 
 def normalize_vector(vectors,offset=0):
+    # This step is irrelevant. Bringing the vectors directly to the simplex (next step) yields the same result
+    # as  normalizing first and then bringing them to the simplex. This step just deals with offset in kchip.analyze.
     '''Normalize vectors to magnitude = 1, with possibility to subtract offset first
     Inputs:
     - vectors: (k row x n column array) of k n-dimensional vectors
@@ -84,6 +86,8 @@ def identify_clusters(positions, points_to_cluster=2000, eps=0.025, min_samples=
     pos_ = positions[choose_points,:]
 
     core, labels = dbscan(pos_,eps=eps,min_samples=min_samples)
+    # core is a list of values 0-1999, which I think are the 2000 points sampled
+    # labels is a list of 2000 values from 0-# of clusters, which I think are the assignments of each of the 2000 points
 
     if show:
         # addplot.cluster_plot(pos_,labels)
@@ -148,7 +152,14 @@ def map_munkres(b1,b2,show=0):
     return model, b1_pred
 
 def map_barcodes_to_clusters(barcodes,clusters,show=0,ax=None):
-    ''' '''
+    ''' 
+    Cheri's explanation: Assigns apriori barcodes to centroids found in dbscan
+    "barcodes" = incoming apriori barcodes transformed into 2d space
+    "clusters" = centroids computed from clusters found through dbscan
+    Outputs:
+    From munkres above:
+    assignments (n x 2 numpy array, integers) of indices in b1 to indices in b2
+    '''
     # Make initial assignments
     assignments_ = munkres(barcodes,clusters)
 

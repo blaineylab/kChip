@@ -29,7 +29,7 @@ def threshold_image(image,threshold=0.15,show=0):
 
     return mask
 
-def find_droplets(image,threshold=0.53,show=0):
+def find_droplets(config,image,threshold=0.53,show=0):
     '''Apply Hough Transform to find droplets in the image
     Inputs:
     - image (n x m uint16 array), a 2D grayscale image
@@ -40,23 +40,25 @@ def find_droplets(image,threshold=0.53,show=0):
     '''
 
     # 1) Find mask based on thresholding summed image
-    mask = threshold_image(image,threshold=0.15)
+    mask = threshold_image(image,threshold=threshold)
     edges = sobel(mask)
 
     # 2) Hough transform to find droplets
-    hough_radii = np.arange(8,11)
+    # hough_radii = np.arange(8,11)
+    hough_radii = np.arange(52./config['image']['pixel_size'],80/config['image']['pixel_size'])
     hough_res = hough_circle(edges,hough_radii)
     # 2b) Take the maximum to avoid redundancies at different radii
     hough_res = np.max(hough_res,axis=0)
 
     # 2c) Find the peaks in the accumulators
-    accum, cx, cy, rad = hough_circle_peaks([hough_res],[10.],threshold=threshold,min_xdistance=15,min_ydistance=15)
-
+#     OLD: accum, cx, cy, rad = hough_circle_peaks([hough_res],[10.],threshold=threshold,min_xdistance=15,min_ydistance=15)
+    accum, cx, cy, rad = hough_circle_peaks([hough_res],[int(65/config['image']['pixel_size'])],threshold=threshold,min_xdistance=int(98/config['image']['pixel_size']),min_ydistance=int(98/config['image']['pixel_size']))
+    
     if show:
         print 'Found '+str(len(cx))+' Droplets'
 
         fig, axes = plt.subplots(figsize=(10,10))
-        axes.imshow(image)
+        axes.imshow(image,vmin=0,vmax=10000)
         plt.axis('off');
 
         for center_y, center_x, radius in zip(cy, cx, rad):

@@ -38,7 +38,7 @@ def initialize_droplets(config):
         img = kchip_io.read(config, x=xy[0],y=xy[1],t='premerge')
 
         # Locate droplets and store in temporary dataframe, then append to list of dataframes
-        droplets_ = drop.find_droplets(img.sum(axis=2))
+        droplets_ = drop.find_droplets(config,img.sum(axis=2),threshold=0.53,show=0)
         droplets_.insert(0,'IndexY',xy[1])
         droplets_.insert(0,'IndexX',xy[0])
 
@@ -271,7 +271,7 @@ def identify_clusters(config, droplets,show=0,ax=None):
     apriori['barcodes'] = np.vstack([np.asarray(apriori['map'][a]) for a in apriori['map'].keys()])
 
     # Rearrange 647 and 594
-    apriori['barcodes'] = apriori['barcodes'][:,[0, 2, 1]]
+    apriori['barcodes'] = apriori['barcodes'][:,[2, 1, 0]]
 
     # Project to 2D
     apriori['barcodes_2d']  = cluster.to_2d(cluster.to_simplex(cluster.normalize_vector(apriori['barcodes'])))
@@ -283,8 +283,15 @@ def identify_clusters(config, droplets,show=0,ax=None):
     cluster_id_to_label = dict()
     for i,j in assignments:
         cluster_id_to_label[j] = apriori['map'].keys()[i]
+        
+    cluster_id_to_barcode = dict()
+    for i,j in assignments:
+        cluster_id_to_barcode[j] = apriori['map'].values()[i]
 
     droplets['Label']=[cluster_id_to_label[i] for i in droplets['Cluster']]
+    droplets['Barcode']=[cluster_id_to_barcode[i] for i in droplets['Cluster']]
+    droplets['Actual_x']=on_plane[:,0]
+    droplets['Actual_y']=on_plane[:,1]
 
     if show:
         for a in droplets['Label'].unique():
@@ -292,7 +299,7 @@ def identify_clusters(config, droplets,show=0,ax=None):
             ax.plot(on_plane[idx,0],on_plane[idx,1],'.',alpha=0.01)
             ax.text(on_plane[idx,0].mean(),on_plane[idx,1].mean(),a)
 
-    return droplets, on_plane
+    return droplets, on_plane, centroids, cluster_id_to_label, apriori, labels
 
 ######################################## REGISTRATION  #########################
 
