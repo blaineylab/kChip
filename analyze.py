@@ -304,19 +304,16 @@ def map_labels_to_clusters(config, droplets, show=0, ax=None):
 
     droplets['Label']=[cluster_id_to_label[i] for i in droplets['Cluster']]
     droplets['Barcode']=[cluster_id_to_barcode[i] for i in droplets['Cluster']]
-    droplets['Actual_x']=on_plane[:,0]
-    droplets['Actual_y']=on_plane[:,1]
+
 
     if show:
         d = droplets.groupby('Label').median()[['PlaneX','PlaneY']]
         for label in d.index.values:
             ax.text(d.loc[label,'PlaneX'],d.loc[label,'PlaneY'],label)
 
-<<<<<<< HEAD
-    return droplets, on_plane, centroids, cluster_id_to_label, apriori, labels
-=======
-    return droplets
->>>>>>> interactive
+
+    return droplets, centroids
+
 
 ######################################## REGISTRATION  #########################
 

@@ -62,6 +62,12 @@ def read(config,x,y,t, number=4, ret=(0,1,2,3)):
     '''
     fname = path.join(config['image']['base_path'],config['image']['names'][t]+'_'+str(x)+'_'+str(y)+'.tif')
     img = io.imread(fname)
+    
+    if 'background_image' in config['image'].keys():
+        bkgdname = path.join(config['image']['base_path'],config['image']['background_image']+'.tif')
+        bkgd = io.imread(bkgdname)
+        img = img.astype('int64')-bkgd.astype('int64')
+        img[img<0] = 0
 
     if 'rescale' in config['image'].keys():
         rescale = config['image']['rescale']
