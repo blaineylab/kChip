@@ -5,11 +5,11 @@ from skimage.transform import rescale
 import matplotlib.pyplot as plt
 
 #kchip imports
-import droplets as drop
-import matchmask
-import io as kchip_io
-import cluster as cluster
-import register as reg
+import kchip.droplets as drop
+import kchip.matchmask as matchmask
+import kchip.io as kchip_io
+import kchip.cluster as cluster
+import kchip.register as reg
 
 ####################### CREATE DROPLETS DATAFRAME ###################
 
@@ -32,7 +32,7 @@ def initialize_droplets(config):
     f_img = 0
 
     for xy in image_idx:
-        print 'Creating droplets from: '+str(xy[0])+','+str(xy[1])
+        print ('Creating droplets from: '+str(xy[0])+','+str(xy[1]))
 
         # Read in image
         img = kchip_io.read(config, x=xy[0],y=xy[1],t='premerge')
@@ -165,7 +165,7 @@ def fit_droplets_to_mask(config,droplets,rotation_theta):
         x = xy[0]
         y = xy[1]
 
-        print 'Fitting droplets to well mask in:',x,y
+        print ('Fitting droplets to well mask in:',x,y)
 
         # Try to load mask; continue otherwise
         mask = well_mask[mask_xy(x,y,100)]
@@ -192,7 +192,7 @@ def fit_droplets_to_mask(config,droplets,rotation_theta):
 
         # Translate
         t_shift, t_error, t_phasediff = matchmask.register_translation(syn_img,mask)
-        print 'Shift: ',t_shift
+        print ('Shift: ',t_shift)
 
         # Updated shifted positions
         shifted_pos[:,1] = shifted_pos[:,1]-t_shift[0]
@@ -308,7 +308,7 @@ def initialize_post_wells(config,timepoint):
 
     post_wells = []
     for xy in image_idx:
-        print 'Now analyzing: '+str(xy[0])+','+str(xy[1])
+        print ('Now analyzing: '+str(xy[0])+','+str(xy[1]))
 
         # Read in image
         post_img = kchip_io.read(config, x=xy[0],y=xy[1],t=timepoint)

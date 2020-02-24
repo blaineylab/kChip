@@ -53,7 +53,7 @@ def find_droplets(image,threshold=0.53,show=0):
     accum, cx, cy, rad = hough_circle_peaks([hough_res],[10.],threshold=threshold,min_xdistance=15,min_ydistance=15)
 
     if show:
-        print 'Found '+str(len(cx))+' Droplets'
+        print ('Found '+str(len(cx))+' Droplets')
 
         fig, axes = plt.subplots(figsize=(10,10))
         axes.imshow(image)
@@ -91,7 +91,7 @@ def remove_overlap(df,config,show=0):
     rmv_index = ((df.ImageX > overlap) & ~(df.IndexX==maxX)) | ((df.ImageY > overlap) & ~(df.IndexY==maxY))
 
     if show:
-        print 'Removed: ' + str(np.sum(rmv_index)) + ' wells from dataFrame due to overlap in images.'
+        print ('Removed: ' + str(np.sum(rmv_index)) + ' wells from dataFrame due to overlap in images.')
 
     return df.drop(df.index[rmv_index]).reset_index(drop=True)
 

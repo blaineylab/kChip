@@ -84,8 +84,8 @@ def read(config,x,y,t, number=4, ret=(0,1,2,3)):
 def read_excel_barcodes(config):
     ''' Read in excel barcodes and returns dictionary label -> barcode '''
 
-    barcodes = pd.read_excel(config['barcodes']['path'],sheetname='Barcodes')
-    labels = pd.read_excel(config['barcodes']['path'],sheetname='Labels')
+    barcodes = pd.read_excel(config['barcodes']['path'],sheet_name='Barcodes')
+    labels = pd.read_excel(config['barcodes']['path'],sheet_name='Labels')
 
     d = dict(zip(labels.values.reshape(-1),barcodes.values.reshape(-1)))
 

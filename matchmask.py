@@ -21,7 +21,7 @@ def clip_image(image, size=(101,101)):
     slices = []
     for axis in range(len(image.shape)):
         diff = sz[axis]-size[axis]
-        slices.append(slice(diff/2,-diff/2))
+        slices.append(slice(diff//2,-diff//2))
 
     return image[slices]
 
@@ -151,10 +151,10 @@ def pad_axis(img,axis,pad_width):
     if pad_width != 0:
         if axis == 0:
             new_img = np.zeros((np.asarray(img.shape[0])+pad_width,img.shape[1]))
-            new_img[pad_width/2:-pad_width/2,:]=img
+            new_img[pad_width//2:-pad_width//2,:]=img
         else:
             new_img = np.zeros((img.shape[0],np.asarray(img.shape[1])+pad_width))
-            new_img[:,pad_width/2:-pad_width/2]=img
+            new_img[:,pad_width//2:-pad_width//2]=img
         return new_img
     else:
         return img

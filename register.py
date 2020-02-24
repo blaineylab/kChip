@@ -15,7 +15,7 @@ def global_coordinates(config,df):
         - df with added global coordinates added in new columns
     '''
 
-    px_to_global = lambda (image_num, pixel_num): (image_num-1)*config['image']['size']*(1-config['image']['overlap']) + pixel_num
+    px_to_global = lambda image_num, pixel_num: (image_num-1)*config['image']['size']*(1-config['image']['overlap']) + pixel_num
 
     Global_X = df.apply(lambda row: px_to_global((row['IndexX'],row['ImageX'])),axis=1)
     Global_Y = df.apply(lambda row: px_to_global((row['IndexY'],row['ImageY'])),axis=1)
