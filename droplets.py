@@ -161,4 +161,4 @@ def extract(measurements,prop):
         sz = len(measurements[0][prop])
     except:
         sz = 1
-    return np.asarray(map(lambda in_: in_[prop],measurements)).reshape(len(measurements),sz)
+    return np.asarray(list(map(lambda in_: in_[prop],measurements))).reshape(len(measurements),sz)

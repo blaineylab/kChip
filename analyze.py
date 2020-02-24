@@ -3,6 +3,7 @@ import numpy as np
 import skimage.io as io
 from skimage.transform import rescale
 import matplotlib.pyplot as plt
+from functools import reduce
 
 #kchip imports
 import kchip.droplets as drop
@@ -367,8 +368,8 @@ def map_pre_to_post(config,timepoint,pre):
     well_assignments, removed_wells = reg.resolve_conflicts(reg.assign_wells(pre,post,shift=shift))
 
     # Map to post-merge data
-    pre = pre.loc[well_assignments[:,0]].reset_index()
-    post = post.loc[well_assignments[:,1]].reset_index()
+    pre = pre.reindex(well_assignments[:,0]).reset_index()
+    post = post.reindex(well_assignments[:,1]).reset_index()
 
     pre_post_merge = pre.merge(post,left_index=True,right_index=True)
 

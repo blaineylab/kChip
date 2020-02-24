@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 from scipy.spatial.distance import cdist
-import io as kchip_io
+import kchip.io as kchip_io
 from skimage.feature import register_translation
 
 def global_coordinates(config,df):
@@ -17,8 +17,8 @@ def global_coordinates(config,df):
 
     px_to_global = lambda image_num, pixel_num: (image_num-1)*config['image']['size']*(1-config['image']['overlap']) + pixel_num
 
-    Global_X = df.apply(lambda row: px_to_global((row['IndexX'],row['ImageX'])),axis=1)
-    Global_Y = df.apply(lambda row: px_to_global((row['IndexY'],row['ImageY'])),axis=1)
+    Global_X = df.apply(lambda row: px_to_global(row['IndexX'],row['ImageX']),axis=1)
+    Global_Y = df.apply(lambda row: px_to_global(row['IndexY'],row['ImageY']),axis=1)
 
     df_ = df.copy()
     df_['GlobalX'] = Global_X
