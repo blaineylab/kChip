@@ -282,7 +282,7 @@ def identify_clusters(config, droplets,show=0,ax=None):
     # Add labels to droplets dataframe
     cluster_id_to_label = dict()
     for i,j in assignments:
-        cluster_id_to_label[j] = apriori['map'].keys()[i]
+        cluster_id_to_label[j] = list(apriori['map'].keys())[i]
 
     droplets['Label']=[cluster_id_to_label[i] for i in droplets['Cluster']]
 

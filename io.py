@@ -89,10 +89,10 @@ def read_excel_barcodes(config):
 
     d = dict(zip(labels.values.reshape(-1),barcodes.values.reshape(-1)))
 
-    for item in d.keys():
-        if item == item:
-            d[item] = literal_eval(d[item])
-        else:
+    for item in list(d.keys()):
+        if item == d[item]:
             del d[item]
+        else:
+            d[item] = literal_eval(d[item])
 
     return d
