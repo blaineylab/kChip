@@ -2,7 +2,7 @@
 
 # Droplets Image Parameters
 image:
-  base_path: ../Chip24_data/
+  base_path: /Users/mandy/Develop/PyCharm/BPCP/kchip/Accessory/Chip24_data/
 
   names:
     premerge: Chip24_premerge
@@ -19,12 +19,12 @@ image:
   bugs: 0       # index of bugs (start at 0) in image for dye channels
 
 well_mask:
-  filename: ../Well Masks/k2_mask.tif
+  filename: /Users/mandy/Develop/PyCharm/BPCP/kchip/Accessory/Well Masks/k2_mask.tif
   pixel_size: 8.33625 # um/px
   well_start_xy: [242,378] # currently this is post scaling
 
 barcodes:
-  path: ../Chip24_data/Notes.xlsx
+  path: /Users/mandy/Develop/PyCharm/BPCP/kchip/Accessory/Chip24_data/Notes.xlsx
   cluster:
       offset: [600,600,600]
       points_to_cluster: 2000
