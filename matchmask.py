@@ -23,7 +23,7 @@ def clip_image(image, size=(101,101)):
         diff = sz[axis]-size[axis]
         slices.append(slice(diff//2,-diff//2))
 
-    return image[slices]
+    return image[tuple(slices)]
 
 def compute_f(image,f):
     sz = image.shape

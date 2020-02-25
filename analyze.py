@@ -169,7 +169,7 @@ def fit_droplets_to_mask(config,droplets,rotation_theta):
         print ('Fitting droplets to well mask in:',x,y)
 
         # Try to load mask; continue otherwise
-        mask = well_mask[mask_xy(x,y,100)]
+        mask = well_mask[tuple(mask_xy(x,y,100))]
 
         if 0 in mask.shape:
             continue

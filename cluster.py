@@ -4,7 +4,7 @@ import copy
 
 # sklearn
 from sklearn.cluster import dbscan
-from sklearn.utils.linear_assignment_ import linear_assignment
+from scipy.optimize import linear_sum_assignment
 from sklearn.linear_model import LinearRegression
 
 # scipy
@@ -120,7 +120,8 @@ def munkres(b1,b2,show=0,ax=None):
     - assignments (n x 2 numpy array, integers) of indices in b1 to indices in b2
     '''
 
-    assignments = linear_assignment(cdist(b1, b2))
+    assignments = linear_sum_assignment(cdist(b1, b2))
+    assignments = np.transpose(np.asarray(assignments))
 
     if show:
         plot_shift(b1[assignments[:,0],:],b2[assignments[:,1],:],ax=ax)
