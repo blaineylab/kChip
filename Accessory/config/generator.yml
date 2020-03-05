@@ -1,0 +1,20 @@
+## Information for generating config files for each Chip
+Chip1:
+  image:
+    well_start_image: [1,1]
+    well_start_xy: [350,350]
+
+  well_mask:
+      filename: ../Well Masks/k1_mask.tif
+      pixel_size: 8.33625 # um/px
+      well_start_xy: [182, 202] # currently this is post scaling
+
+Chip2:
+  image:
+    well_start_image: [1,1]
+    well_start_xy: [525,320]
+
+  well_mask:
+      filename: ../Well Masks/k1_mask.tif
+      pixel_size: 8.33625 # um/px
+      well_start_xy: [182, 202] # currently this is post scaling
