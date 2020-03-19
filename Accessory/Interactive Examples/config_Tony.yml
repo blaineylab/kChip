@@ -1,0 +1,31 @@
+## SAMPLE YAML CONFIGURATION FILE FOR KCHIP
+
+
+# Droplets Image Parameters
+image:
+  base_path: /Volumes/Seagate Backup Plus Drive/20180720_richness/Chip8
+
+  names:
+    premerge: Chip8_premerge
+    t0: Chip8_t0
+
+  pixel_size: 6.5 # um/px
+  size: 1024 # px
+  overlap: 0.05
+  well_start_image: [1,1]
+  well_start_xy: [114,360]
+  dyes: [0,2,3]  # index (start at 0) in image for dye channels
+  bugs: 1      # index of bugs (start at 0) in image for dye channels
+
+well_mask:
+  filename: ../kchip/Accessory/Well Masks/k2_mask.tif
+  pixel_size: 8.33625 # um/px
+  well_start_xy: [203,  253] # currently this is post scaling
+
+barcodes:
+  path: Notes.xlsx
+  cluster:
+      offset: [600,600,600]
+      points_to_cluster: 2000
+      eps: 0.01
+      min_samples: 10

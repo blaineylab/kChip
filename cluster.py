@@ -91,9 +91,9 @@ def identify_clusters(positions, points_to_cluster=2000, eps=0.025, min_samples=
 
     if show:
         # addplot.cluster_plot(pos_,labels)
-        print 'Selected '+ str(points_to_cluster)+ ' points, with random seed at: ' + str(seed)
-        print 'Removed '+ str(float(np.sum([labels==-1]))/len(labels)*100)+ '% of Points'
-        print 'Found ' +str(len(np.unique(labels))-1)+ ' Clusters'
+        print ('Selected '+ str(points_to_cluster)+ ' points, with random seed at: ' + str(seed))
+        print ('Removed '+ str(float(np.sum([labels==-1]))/len(labels)*100)+ '% of Points')
+        print ('Found ' +str(len(np.unique(labels))-1)+ ' Clusters')
 
     # Compute centroids, of all clusters but noise clusters (label=-1)
     centroids = compute_centroids(pos_[labels!=-1,:],labels[labels!=-1])
@@ -152,7 +152,7 @@ def map_munkres(b1,b2,show=0):
     return model, b1_pred
 
 def map_barcodes_to_clusters(barcodes,clusters,show=0,ax=None):
-    ''' 
+    '''
     Cheri's explanation: Assigns apriori barcodes to centroids found in dbscan
     "barcodes" = incoming apriori barcodes transformed into 2d space
     "clusters" = centroids computed from clusters found through dbscan
@@ -246,7 +246,7 @@ class ReactiveCluster(object):
         self.draw()
 
     def on_pick(self, event):
-        print 'detected pick'
+        print ('detected pick')
         try:
             pos = np.asarray([(event.mouseevent.xdata,event.mouseevent.ydata)])
 
@@ -261,7 +261,7 @@ class ReactiveCluster(object):
 
             self.update()
         except Exception as e:
-            print e.message
+            print (e.message)
 
     def output(self):
         self.droplets['Cluster'] = assign_cluster(self.points, self.centroids)

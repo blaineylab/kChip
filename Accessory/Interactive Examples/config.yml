@@ -3,29 +3,34 @@
 
 # Droplets Image Parameters
 image:
-  base_path: /Volumes/Seagate Backup Plus Drive/20180720_richness/Chip8
-
+#   base_path: /Volumes/Seagate Backup Plus Drive/2159_Scope/Cheri/191209-HIV_conc
+  base_path: '20191212_diag_kchip_PAO1' # keep data in same folder as the code, write path to external hard drive!!!
+  base_path2: '' # path to background image, keep empty quotes if it's in the same directory
   names:
-    premerge: Chip8_premerge
-    t0: Chip8_t0
+    premerge: 20191212_diag_kchip_PAO1_premerge
+    t0: 20191212_diag_kchip_PAO1_t0
+    t1: 20191212_diag_kchip_PAO1_t3
 
-  pixel_size: 6.5 # um/px
-  size: 1024 # px
-  overlap: 0.05
-  well_start_image: [1,1]
-  well_start_xy: [114,360]
-  dyes: [0,2,3]  # index (start at 0) in image for dye channels
-  bugs: 1      # index of bugs (start at 0) in image for dye channels
+  pixel_size: 6.5 # um/px, based on magnification (for 2X objective), Hough transform looks for specific droplet size based on this value
+  size: 1024 # px, half of 2048 bc 2X binned
+  overlap: 0.05 # amount of overlap the matlab code uses for tiling
+  well_start_image: [1,2]  # don't change this??
+  well_start_xy: [540,140] # don't change this??
+  dyes: [0,1,2]  # index (start at 0) in image for dye channels, R Y G (first three are barcodes) B (bugs-GFP)
+  bugs: 3       # index of bugs (start at 0) in image for dye channels
+  rescale: [1.4,1,1.7,1] # need sum of maximum intensities of all three barcodes (these need to all be on the same scale) for normalization, check the max signal in imageJ using HiLo (Image-->Lookup Tables) and B&C
+  background_image: background_ave_gauss10
+
 
 well_mask:
-  filename: ../kchip/Accessory/Well Masks/k2_mask.tif
+  filename: kchip/well_mask.tif # not used for bchips, can stay here harmlessly 
   pixel_size: 8.33625 # um/px
-  well_start_xy: [203,  253] # currently this is post scaling
+  well_start_xy: [850,  522] # currently this is post scaling
 
-barcodes:
-  path: Notes.xlsx
-  cluster:
-      offset: [600,600,600]
+barcodes: # Include corner barcodes in your experiment to make barcode assignment easier
+  path: Notes_20191217_PAO1.xlsx
+  cluster: # Don't worry about below
+      offset: [0,0,0]
       points_to_cluster: 2000
-      eps: 0.01
-      min_samples: 10
+      eps: 0.020 # gives an expectation for cluster size
+      min_samples: 8 # gives an expectation for cluster size, change until it works

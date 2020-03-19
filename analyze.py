@@ -32,13 +32,13 @@ def initialize_droplets(config):
     f_img = 0
 
     for xy in image_idx:
-        print 'Creating droplets from: '+str(xy[0])+','+str(xy[1])
+        print ('Creating droplets from: '+str(xy[0])+','+str(xy[1]))
 
         # Read in image
         img = kchip_io.read(config, x=xy[0],y=xy[1],t='premerge')
 
         # Locate droplets and store in temporary dataframe, then append to list of dataframes
-        droplets_ = drop.find_droplets(config,img.sum(axis=2),threshold=0.53,show=0)
+        droplets_ = drop.find_droplets(config,img.sum(axis=2),show=0)
         droplets_.insert(0,'IndexY',xy[1])
         droplets_.insert(0,'IndexX',xy[0])
 
@@ -165,7 +165,7 @@ def fit_droplets_to_mask(config,droplets,rotation_theta):
         x = xy[0]
         y = xy[1]
 
-        print 'Fitting droplets to well mask in:',x,y
+        print ('Fitting droplets to well mask in:',x,y)
 
         # Try to load mask; continue otherwise
         mask = well_mask[mask_xy(x,y,100)]
@@ -192,7 +192,7 @@ def fit_droplets_to_mask(config,droplets,rotation_theta):
 
         # Translate
         t_shift, t_error, t_phasediff = matchmask.register_translation(syn_img,mask)
-        print 'Shift: ',t_shift
+        print ('Shift: ',t_shift)
 
         # Updated shifted positions
         shifted_pos[:,1] = shifted_pos[:,1]-t_shift[0]
@@ -270,7 +270,7 @@ def identify_clusters(config, droplets,show=0,ax=None):
             idx = droplets['Cluster'].values==a
             ax.plot(on_plane[idx,0],on_plane[idx,1],'.',alpha=0.01)
 
-    return droplets
+    return droplets, centroids, on_plane
 
 def map_labels_to_clusters(config, droplets, show=0, ax=None):
 
@@ -291,13 +291,13 @@ def map_labels_to_clusters(config, droplets, show=0, ax=None):
 
     # Map apriori barcodes to clusters
     centroids = droplets.groupby('Cluster')[['PlaneX','PlaneY']].median().values
-    assignments, map_, unassigned  = cluster.map_barcodes_to_clusters(apriori['barcodes_2d'],centroids,show=show,ax=ax)
+    assignments, map_, unassigned  = cluster.map_barcodes_to_clusters(apriori['barcodes_2d'],centroids,show=1,ax=ax)
 
     # Add labels to droplets dataframe
     cluster_id_to_label = dict()
     for i,j in assignments:
         cluster_id_to_label[j] = apriori['map'].keys()[i]
-        
+
     cluster_id_to_barcode = dict()
     for i,j in assignments:
         cluster_id_to_barcode[j] = apriori['map'].values()[i]
@@ -307,6 +307,7 @@ def map_labels_to_clusters(config, droplets, show=0, ax=None):
 
 
     if show:
+        # fig, ax = plt.subplots()
         d = droplets.groupby('Label').median()[['PlaneX','PlaneY']]
         for label in d.index.values:
             ax.text(d.loc[label,'PlaneX'],d.loc[label,'PlaneY'],label)
@@ -329,7 +330,7 @@ def initialize_post_wells(config,timepoint):
 
     post_wells = []
     for xy in image_idx:
-        print 'Now analyzing: '+str(xy[0])+','+str(xy[1])
+        print ('Now analyzing: '+str(xy[0])+','+str(xy[1]))
 
         # Read in image
         post_img = kchip_io.read(config, x=xy[0],y=xy[1],t=timepoint)
@@ -409,9 +410,9 @@ def condense_output(droplets,wells):
         - condensed, the condensed output dataframe
     '''
 
-    condensed = wells[['Post_Area','Post_Intensity','Hash']]
+    condensed = wells[['Post_Area','Post_Intensity','Hash','Pre_IndexX','Pre_IndexY','Pre_ImageX','Pre_ImageY','Pre_GlobalX','Pre_GlobalY']]
 
-    condensed.columns = ['Area','Intensity','Hash']
+    condensed.columns = ['Area','Intensity','Hash','Pre_IndexX','Pre_IndexY','Pre_ImageX','Pre_ImageY','Pre_GlobalX','Pre_GlobalY']
 
     counted_droplets = droplets.groupby(['Hash','Label'])['IndexX'].count().unstack(level=-1).reset_index()
     condensed = condensed.merge(counted_droplets,on='Hash')

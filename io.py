@@ -64,10 +64,18 @@ def read(config,x,y,t, number=4, ret=(0,1,2,3)):
     img = io.imread(fname)
     
     if 'background_image' in config['image'].keys():
-        bkgdname = path.join(config['image']['base_path'],config['image']['background_image']+'.tif')
+        bkgdname = path.join(config['image']['base_path2'],config['image']['background_image']+'.tif')
         bkgd = io.imread(bkgdname)
-        img = img.astype('int64')-bkgd.astype('int64')
+        img = img.astype('float64')-bkgd.astype('float64')
         img[img<0] = 0
+        
+#     if 'flatfield_image' in config['image'].keys():
+#         ff_name = path.join(config['image']['base_path'],config['image']['flatfield_image']+'.tif')
+#         ff_img = io.imread(ff_name)
+#         ff_img = ff_img.astype('float64')
+#         for i in range (0,4):
+#             ff_img[:,:,i] = ff_img[:,:,i]/ff_img[:,:,i].max()
+#         img = img/ff_img
 
     if 'rescale' in config['image'].keys():
         rescale = config['image']['rescale']
@@ -90,8 +98,8 @@ def read(config,x,y,t, number=4, ret=(0,1,2,3)):
 def read_excel_barcodes(config):
     ''' Read in excel barcodes and returns dictionary label -> barcode '''
 
-    barcodes = pd.read_excel(config['barcodes']['path'],sheetname='Barcodes')
-    labels = pd.read_excel(config['barcodes']['path'],sheetname='Labels')
+    barcodes = pd.read_excel(config['barcodes']['path'],sheetname='Barcodes',index_col=0)
+    labels = pd.read_excel(config['barcodes']['path'],sheetname='Labels',index_col=0)
 
     d = dict(zip(labels.values.reshape(-1),barcodes.values.reshape(-1)))
 
