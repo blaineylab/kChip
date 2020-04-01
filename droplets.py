@@ -29,7 +29,7 @@ def threshold_image(image,threshold=0.15,show=0):
 
     return mask
 
-def find_droplets(image,threshold=0.53,show=0):
+def find_droplets(config,image,threshold=0.53,show=1):
     '''Apply Hough Transform to find droplets in the image
     Inputs:
     - image (n x m uint16 array), a 2D grayscale image
@@ -44,7 +44,9 @@ def find_droplets(image,threshold=0.53,show=0):
     edges = sobel(mask)
 
     # 2) Hough transform to find droplets
-    hough_radii = np.arange(8,11)
+    # hough_radii = np.arange(8,11)
+    # Droplet size range should be radius range of 52 um to 80 um
+    hough_radii = np.arange(52./config['image']['pixel_size'],80/config['image']['pixel_size'])
     hough_res = hough_circle(edges,hough_radii)
     # 2b) Take the maximum to avoid redundancies at different radii
     hough_res = np.max(hough_res,axis=0)
@@ -55,13 +57,13 @@ def find_droplets(image,threshold=0.53,show=0):
     if show:
         print 'Found '+str(len(cx))+' Droplets'
 
-        fig, axes = plt.subplots(figsize=(10,10))
-        axes.imshow(image)
-        plt.axis('off');
+#         fig, axes = plt.subplots(figsize=(10,10))
+#         axes.imshow(image)
+#         plt.axis('off');
 
-        for center_y, center_x, radius in zip(cy, cx, rad):
-            circy, circx = draw_circle(center_y, center_x, radius)
-            axes.plot(circx,circy,'r')
+#         for center_y, center_x, radius in zip(cy, cx, rad):
+#             circy, circx = draw_circle(center_y, center_x, radius)
+#             axes.plot(circx,circy,'r')
 
     return pd.DataFrame(data=np.vstack((cx,cy)).T,columns=['ImageX','ImageY'])
 

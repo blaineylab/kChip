@@ -35,10 +35,10 @@ def initialize_droplets(config):
         print 'Creating droplets from: '+str(xy[0])+','+str(xy[1])
 
         # Read in image
-        img = kchip_io.read(config, x=xy[0],y=xy[1],t='premerge')
+        img = kchip_io.read(config,x=xy[0],y=xy[1],t='premerge', ret=(0,1,2,3,4), number=5)
 
         # Locate droplets and store in temporary dataframe, then append to list of dataframes
-        droplets_ = drop.find_droplets(img.sum(axis=2))
+        droplets_ = drop.find_droplets(config,np.sum(img[:,:,[j for j in range(3)]],axis=2))
         droplets_.insert(0,'IndexY',xy[1])
         droplets_.insert(0,'IndexX',xy[0])
 
@@ -49,22 +49,24 @@ def initialize_droplets(config):
         to_add = pd.DataFrame(dyes[droplets_['ImageY'],droplets_['ImageX']])
 
         # Fix a bug where if there is only 1 droplet detected it is wrong orientaiton
-        if to_add.shape[1] != 3:
+        if 1 in to_add.shape:
             to_add = to_add.T
-
-        droplets_[['R','G','B']]= to_add
+        
+        #Store fluorescence values in droplets columns
+        droplets_[['Dye '+str(d) for d in range(to_add.shape[-1])]]= to_add
 
         # append dataframe
         droplets.append(droplets_)
 
         # fft the image, clip, and store update average
-        f_img += matchmask.clip_image(matchmask.fft(img.mean(axis=2))).astype('float')/len(image_idx)
+#         f_img += matchmask.clip_image(matchmask.fft(img.mean(axis=2))).astype('float')/len(image_idx)
 
     # Concatenate all the droplets_ dataframes
     droplets = pd.concat(droplets).reset_index(drop=True)
 
     # Correct the rotation
-    droplets, rotation_theta = apply_rotation(droplets, f_img)
+#     droplets, rotation_theta = apply_rotation(droplets, f_img)
+    rotation_theta = 'Not using matchmask'
 
     return droplets, rotation_theta
 
@@ -259,7 +261,11 @@ def identify_clusters(config, droplets,show=0,ax=None):
     min_samples=config['barcodes']['cluster']['min_samples']
 
     # Find cluster centroids and assign all droplets to clusters.
-    on_plane = cluster.to_2d(cluster.to_simplex(cluster.normalize_vector(droplets[['R','G','B']].values,offset=offset)))
+    on_plane = cluster.to_2d(cluster.to_simplex(cluster.normalize_vector(droplets[['Dye 0','Dye 1 corr','Dye 2 corr']].values,offset=offset)))
+    
+    droplets['PlaneX'] = on_plane[:,0]
+    droplets['PlaneY'] = on_plane[:,1]
+    
     centroids, labels = cluster.identify_clusters(on_plane, points_to_cluster=points_to_cluster, eps=eps,min_samples=min_samples,show=0)
     droplets['Cluster']=labels
 
@@ -271,7 +277,7 @@ def identify_clusters(config, droplets,show=0,ax=None):
     apriori['barcodes'] = np.vstack([np.asarray(apriori['map'][a]) for a in apriori['map'].keys()])
 
     # Rearrange 647 and 594
-    apriori['barcodes'] = apriori['barcodes'][:,[0, 2, 1]]
+    apriori['barcodes'] = apriori['barcodes'][:,[2,1,0]]
 
     # Project to 2D
     apriori['barcodes_2d']  = cluster.to_2d(cluster.to_simplex(cluster.normalize_vector(apriori['barcodes'])))
@@ -292,7 +298,7 @@ def identify_clusters(config, droplets,show=0,ax=None):
             ax.plot(on_plane[idx,0],on_plane[idx,1],'.',alpha=0.01)
             ax.text(on_plane[idx,0].mean(),on_plane[idx,1].mean(),a)
 
-    return droplets, on_plane
+    return droplets, on_plane, centroids
 
 ######################################## REGISTRATION  #########################
 

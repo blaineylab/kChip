@@ -3,19 +3,20 @@
 
 # Droplets Image Parameters
 image:
-  base_path: Demo Data Set/Chip1
+  base_path: .
 
   names:
-    premerge: Chip1_premerge
+    premerge: AF405
     t0: Chip1_t0
 
-  pixel_size: 6.5 # um/px
-  size: 1024 # px
+  pixel_size: 3.25 # um/px
+  size: 2048 # px
   overlap: 0.05
   well_start_image: [1,2]
   well_start_xy: [540,140]
-  dyes: [1,2,3]  # index (start at 0) in image for dye channels
-  bugs: 0       # index of bugs (start at 0) in image for dye channels
+  dyes: [0,1,2,3]  # index (start at 0) in image for dye channels
+  bugs: 4       # index of bugs (start at 0) in image for dye channels
+  rescale: [1,1,3,1,1]
 
 well_mask:
   filename: kchip/well_mask.tif
