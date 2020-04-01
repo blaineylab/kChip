@@ -1,3 +1,3 @@
-# kChip Python Package
+# kChip Python Package for clustering
 
-This package contains code necessary for analyzing data for the kChip project. 
+This package contains code necessary for clsutering droplets for the kChip project. 
